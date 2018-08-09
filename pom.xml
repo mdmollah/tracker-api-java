@@ -12,6 +12,24 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <version>1.4.1</version>
+                <executions>
+                    <execution>
+                        <id>download-api-spec</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://raw.githubusercontent.com/yinchanted/tracker-spec/v2/SWIFT-API_gpi-api_2.0.2_swagger.json</url>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-codegen-maven-plugin</artifactId>
                 <version>3.0.0-rc1</version>
@@ -20,9 +38,8 @@
                         <goals>
                             <goal>generate</goal>
                         </goals>
-			<configuration>
-			    <!-- To Do: download from link 
-			    <inputSpec>${project.basedir}/xx.json</inputSpec> -->
+			            <configuration>
+			                <inputSpec>${project.build.directory}/SWIFT-API_gpi-api_2.0.2_swagger.json</inputSpec>
                             <language>java</language>
                         </configuration>
                     </execution>
@@ -72,11 +89,6 @@
     </build>
 
     <dependencies>
-        <dependency>
-            <groupId>org.glassfish.jersey</groupId>
-            <artifactId>jax-rs-ri</artifactId>
-            <version>2.0-rc1</version>
-        </dependency>
 
         <dependency>
             <groupId>com.google.code.gson</groupId>
