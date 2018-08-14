@@ -16,14 +16,14 @@
                 <artifactId>download-maven-plugin</artifactId>
                 <version>1.4.1</version>
                 <executions>
-                    <execution>
+                    <execution>           	
                         <id>download-api-spec</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <url>https://raw.githubusercontent.com/yinchanted/tracker-spec/v2/SWIFT-API_gpi-api_2.0.2_swagger.json</url>
+                            <uri>https://raw.githubusercontent.com/yinchanted/tracker-spec/v2/SWIFT-API_gpi-api_2.0.2_swagger.json</uri>
                             <outputDirectory>${project.build.directory}</outputDirectory>
                         </configuration>
                     </execution>
@@ -35,7 +35,7 @@
                 <version>2.3.1</version>
                 <executions>
                     <execution>
-                        <goals>
+                    	<goals>
                             <goal>generate</goal>
                         </goals>
 			            <configuration>
@@ -86,6 +86,11 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-surefire-plugin</artifactId>
+  <version>2.22.0</version>
+</plugin>
         </plugins>
     </build>
 	

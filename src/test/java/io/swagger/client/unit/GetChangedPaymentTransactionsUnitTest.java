@@ -1,25 +1,20 @@
-package io.swagger.client.api;
+package io.swagger.client.unit;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.squareup.okhttp.internal.framed.Http2;
-
-import static org.mockito.Mockito.*;
-
-import java.util.List;
-
-import io.swagger.client.ApiClient;
 import io.swagger.client.ApiException;
 import io.swagger.client.ApiResponse;
+import io.swagger.client.api.GetChangedPaymentTransactionsApi;
 import io.swagger.client.model.CamtA0400103;
 import io.swagger.client.model.CamtA0400203;
-import io.swagger.client.model.CamtA0500103;
 import io.swagger.client.model.GetChangedPaymentTransactionsRequest;
-import okhttp3.OkHttpClient;
 
 
 
@@ -31,8 +26,10 @@ public class GetChangedPaymentTransactionsUnitTest {
 	{
 		
 		GetChangedPaymentTransactionsApi api = new GetChangedPaymentTransactionsApi();
+		api.getApiClient().setBasePath("https://sandbox.swiftlab-api-developer.com/swift-apitracker-pilot/v2");
 		String base = api.getApiClient().getBasePath();
-		Assert.assertEquals(base, "https://local-api-domain/swift-apitracker-pilot/v2");
+		Assert.assertEquals(base, "https://sandbox.swiftlab-api-developer.com/swift-apitracker-pilot/v2");
+		System.out.println("Passed Test ValidateBaseUrl");
 	}
 	@Test
 	public void getChangedPaymentTransactionsPostWithHttpInfoShouldReturnResponse() throws ApiException
@@ -48,14 +45,14 @@ public class GetChangedPaymentTransactionsUnitTest {
 						
 		when(test.getChangedPaymentTransactionsPostWithHttpInfo("001","1.0", 
 				"2018-03-23T15:56:26.728Z", "e802ab96-bb3a-4965-9139-5214b9f0f074", 
-				"(ApplAPIKey=yVGhKiV5z1ZGdaqFXoZ8AiSA9n5CrY6B),(RBACRole=[FullViewer/Scope/cclabeb0])", "U1khA8h9Lm1PqzB99fG6uw",
-				requestBody)).thenReturn(response);
+				"(ApplAPIKey=yVGhKiV5z1ZGdaqFXoZ8AiSA9n5CrY6B),(RBACRole=[FullViewer/Scope/cclabeb0])", "U1khA8h9Lm1PqzB99fG6uw","",
+				requestBody,"1")).thenReturn(response);
 		
 		Assert.assertEquals(test.getChangedPaymentTransactionsPostWithHttpInfo
 				("001","1.0","2018-03-23T15:56:26.728Z", "e802ab96-bb3a-4965-9139-5214b9f0f074", 
-				"(ApplAPIKey=yVGhKiV5z1ZGdaqFXoZ8AiSA9n5CrY6B),(RBACRole=[FullViewer/Scope/cclabeb0])", "U1khA8h9Lm1PqzB99fG6uw",
-				requestBody),response);
-	
+				"(ApplAPIKey=yVGhKiV5z1ZGdaqFXoZ8AiSA9n5CrY6B),(RBACRole=[FullViewer/Scope/cclabeb0])", "U1khA8h9Lm1PqzB99fG6uw","",
+				requestBody,"1"),response);
+		System.out.println("Passed Test getChangedPaymentTransactionsPostWithHttpInfoShouldReturnResponse");
 	}
 	@Test
 	public void getChangedPaymentTransactionsPostShouldReturnData() throws ApiException
@@ -72,12 +69,13 @@ public class GetChangedPaymentTransactionsUnitTest {
 		when(test.getChangedPaymentTransactionsPost("001","1.0", 
 				"2018-03-23T15:56:26.728Z", "e802ab96-bb3a-4965-9139-5214b9f0f074", 
 				"(ApplAPIKey=yVGhKiV5z1ZGdaqFXoZ8AiSA9n5CrY6B),(RBACRole=[FullViewer/Scope/cclabeb0])", "U1khA8h9Lm1PqzB99fG6uw",
-				requestBody)).thenReturn(response);
+				"",requestBody,"1")).thenReturn(response);
 		
 		Assert.assertEquals(test.getChangedPaymentTransactionsPost
 				("001","1.0","2018-03-23T15:56:26.728Z", "e802ab96-bb3a-4965-9139-5214b9f0f074", 
 				"(ApplAPIKey=yVGhKiV5z1ZGdaqFXoZ8AiSA9n5CrY6B),(RBACRole=[FullViewer/Scope/cclabeb0])", "U1khA8h9Lm1PqzB99fG6uw",
-				requestBody),response);
+				"",requestBody,"1"),response);
+		System.out.println("Passed Test getChangedPaymentTransactionsPostShouldReturnData");
 	
 	}
 	
