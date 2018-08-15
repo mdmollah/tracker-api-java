@@ -29,7 +29,7 @@ public class GetChangedPaymentTransactionsUnitTest {
 	}
 
 	@Test
-	public void getChangedPaymentTransactionsPostWithHttpInfoShouldReturnResponse() throws ApiException {
+	public void getChangedPaymentTra29nsactionsPostWithHttpInfoShouldReturnResponse() throws ApiException {
 		CamtA0400103 requestBody = new CamtA0400103();
 		requestBody.setGetChangedPaymentTransactionsRequest(new GetChangedPaymentTransactionsRequest());
 		List<String> myInstitution = asList("CCLABEB0");

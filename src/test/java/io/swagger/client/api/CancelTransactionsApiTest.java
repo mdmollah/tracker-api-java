@@ -11,13 +11,14 @@ import java.util.logging.Logger;
 
 import org.junit.Test;
 
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.github.fge.jsonschema.core.report.ProcessingReport;
+
 import io.swagger.client.ApiException;
 import io.swagger.client.ApiResponse;
 import io.swagger.client.helper.UtilHelper;
 import io.swagger.client.model.CamtA0600102;
 import io.swagger.client.model.CamtA0600202;
-import io.swagger.client.model.CamtA0700102;
-import io.swagger.client.model.CamtA0700202;
 import io.swagger.client.model.CancelTransactionRequest;
 import io.swagger.client.model.CancellationReason6Code;
 import io.swagger.client.model.CancellationRequestDetails1;
@@ -27,7 +28,7 @@ public class CancelTransactionsApiTest {
 	private final CancelTransactionsApi api = new CancelTransactionsApi();
 
 	@Test
-	public void CancelTransactionsApiPostTest() throws ApiException, NoSuchAlgorithmException, IOException {
+	public void CancelTransactionsApiPostTest() throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
 		String laUApplicationID = UtilHelper.getInstance().mymap.get("laUApplicationID");
 		String laUVersion = UtilHelper.getInstance().mymap.get("laUVersion");
 		String laUCallTime = UtilHelper.getInstance().mymap.get("laUCallTime");
@@ -85,6 +86,12 @@ public class CancelTransactionsApiTest {
 		laUResponseNonce = headers.get("LAUResponseNonce").get(0);
 		laUVersion = headers.get("LAUVersion").get(0);
 		laUSignature = headers.get("LAUSignature").get(0);
+		
+		ProcessingReport report = UtilHelper.getInstance().schemaValidation(api.getApiClient().getJSON().serialize(responseBody));
+		if(report.isSuccess())
+			System.out.println("Response Validation Success");
+		else
+			System.out.println("Response Validation Failed");
 
 	}
 }
