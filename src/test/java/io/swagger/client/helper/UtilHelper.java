@@ -60,7 +60,7 @@ public class UtilHelper {
 		final JsonSchema schema = factory.getJsonSchema(fstabSchema);
 		ProcessingReport report;
 		report = schema.validate(good);
-		//System.out.println(report.isSuccess());
+		System.out.println(report.isSuccess());
 		return report;
 	}
 	public void getResponseSchemaFromSpec(String apiPath) throws JsonProcessingException, IOException, URISyntaxException
@@ -68,6 +68,8 @@ public class UtilHelper {
 		ObjectMapper mapper = new ObjectMapper();
 		URL url = this.getClass().getResource("/SWIFT-API_gpi-api_2.0.2_swagger.json");
 		final JsonNode root = mapper.readTree(new File(url.toURI()));
+		JsonNode update= root.path("definitions").path("UpdatePaymentStatusResponse");
+		System.out.println(update);
 		JsonNode nameNode = root.path("paths").path(apiPath).path("post").path("responses").path("200").path("schema");
 		if (nameNode.isMissingNode()) {
 			// if "name" node is missing
@@ -79,7 +81,7 @@ public class UtilHelper {
 	public static void main(String s[])
 			throws NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
 		//UtilHelper.getInstance().getResponseSchemaFromSpec("/status_confirmations");
-		System.out.println(UtilHelper.getInstance().schemaValidation("{}"));
+		UtilHelper.getInstance().getResponseSchemaFromSpec("/status_confirmations");
 	}
 
 }
