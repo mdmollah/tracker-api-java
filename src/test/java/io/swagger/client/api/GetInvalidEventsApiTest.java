@@ -1,16 +1,17 @@
 package io.swagger.client.api;
 
 import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
@@ -29,26 +30,34 @@ import io.swagger.client.model.GetInvalidEventsRequest;
 //@Ignore
 public class GetInvalidEventsApiTest {
 
-	private final GetInvalidEventsApi api = new GetInvalidEventsApi();
+	private final static GetInvalidEventsApi api = new GetInvalidEventsApi();
 
-	@Test
-	public void getInvalidEventsPostTest()
-			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
+	static String laUApplicationID;
+	static String laUVersion;
+	static String laUCallTime;
+	static String laURequestNonce;
+	static String laUResponseNonce;
+	static String laUSigned;
+	static String laUSignature;
+	static String xApi;
+	static String xRecord;
+	static boolean signnature_required;
+	static URI uri = null;
 
-		String laUApplicationID = UtilHelper.getInstance().mymap.get("laUApplicationID");
-		String laUVersion = UtilHelper.getInstance().mymap.get("laUVersion");
-		String laUCallTime = UtilHelper.getInstance().mymap.get("laUCallTime");
-		String laURequestNonce = UtilHelper.getInstance().mymap.get("laURequestNonce");
-		String laUResponseNonce = UtilHelper.getInstance().mymap.get("laUResponseNonce");
-		String laUSigned = UtilHelper.getInstance().mymap.get("laUSigned");
-		String laUSignature = UtilHelper.getInstance().mymap.get("laUSignature");
-		String xApi = UtilHelper.getInstance().mymap.get("xApi");
-		String xRecord = UtilHelper.getInstance().mymap.get("GetInvalidEventsApiTest.xRecord");
-
-		URI uri = null;
-
-		// Provide URL of gpi Connector instance
-		// api.getApiClient().setBasePath("https://WIN-SSV7RS8364L:8443/swift.apitracker/v1");
+	@BeforeClass
+	public static void setup() throws NoSuchAlgorithmException, IOException {
+		laUApplicationID = UtilHelper.getInstance().mymap.get("laUApplicationID");
+		laUVersion = UtilHelper.getInstance().mymap.get("laUVersion");
+		laUCallTime = UtilHelper.getInstance().mymap.get("laUCallTime");
+		laURequestNonce = UtilHelper.getInstance().mymap.get("laURequestNonce");
+		laUResponseNonce = UtilHelper.getInstance().mymap.get("laUResponseNonce");
+		laUSigned = UtilHelper.getInstance().mymap.get("laUSigned");
+		laUSignature = UtilHelper.getInstance().mymap.get("laUSignature");
+		xApi = UtilHelper.getInstance().mymap.get("xApi");
+		xRecord = UtilHelper.getInstance().mymap.get("GetInvalidEventsApiTest.xRecord");
+		signnature_required = Boolean.parseBoolean(
+				UtilHelper.getInstance().mymap.get("GetInvalidEventsApiTest.signatureRequired"));
+		uri = null;
 		api.getApiClient().setBasePath("https://sandbox.swiftlab-api-developer.com/swift-apitracker-pilot/v2");
 
 		try {
@@ -56,6 +65,11 @@ public class GetInvalidEventsApiTest {
 		} catch (URISyntaxException ex) {
 			Logger.getLogger("Tracker API").log(Level.SEVERE, null, ex);
 		}
+	}
+
+	@Test
+	public void getInvalidEventsPostTest()
+			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
 
 		CamtA0500103 requestBody = new CamtA0500103();
 		requestBody.setGetInvalidEventsRequest(new GetInvalidEventsRequest());
@@ -80,22 +94,67 @@ public class GetInvalidEventsApiTest {
 		// Print response
 		CamtA0500203 responseBody = response.getData();
 		System.out.println(api.getApiClient().getJSON().serialize(responseBody));
-
-		// Verify LAU
-		Map<String, List<String>> headers = response.getHeaders();
-		laUApplicationID = headers.get("LAUApplicationID").get(0);
-		laUCallTime = headers.get("LAUCallTime").get(0);
-		laURequestNonce = headers.get("LAURequestNonce").get(0);
-		laUResponseNonce = headers.get("LAUResponseNonce").get(0);
-		laUVersion = headers.get("LAUVersion").get(0);
-		laUSignature = headers.get("LAUSignature").get(0);
+		System.out.println(response.getStatusCode());
 
 		ProcessingReport report = UtilHelper.getInstance()
 				.schemaValidation(api.getApiClient().getJSON().serialize(responseBody));
-		if (report.isSuccess())
-			System.out.println("Response Validation Success");
-		else
-			System.out.println("Response Validation Failed");
+		assertEquals(report.isSuccess(), true);
+	}
+
+	@Test
+	public void getInvalidEventsPost404ErrorTest()
+			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
+
+		CamtA0500103 requestBody = new CamtA0500103();
+		CamtA0500203 responseBody = null;
+		try {
+			ApiResponse<CamtA0500203> response = api.getInvalidEventsPostWithHttpInfo(laUApplicationID, laUVersion,
+					laUCallTime, laURequestNonce, laUSigned, laUSignature, xApi, requestBody, "1");
+			// Print response
+			responseBody = response.getData();
+			System.out.println(responseBody.getGetInvalidEventsResponse());
+			System.out.println(api.getApiClient().getJSON().serialize(responseBody));
+		} catch (ApiException e) {
+			// TODO: handle exception
+			// reading from Swagger.json
+			System.out.println("Response Code =" + e.getCode() + " Response Message=" + e.getMessage());
+			StringBuilder value = UtilHelper.getInstance().getErrorValue("/get_invalid_events",
+					String.valueOf(e.getCode()));
+			// compare with response
+			System.out.println(value);
+			assertEquals(value.toString(), e.getMessage());
+		}
+
+		ProcessingReport report = UtilHelper.getInstance()
+				.schemaValidation(api.getApiClient().getJSON().serialize(responseBody));
+		assertEquals(report.isSuccess(), true);
+
+	}
+
+	@Test
+	public void getInvalidEventsPost401ErrorTestWithInvalidXApi()
+			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
+
+		CamtA0500103 requestBody = new CamtA0500103();
+		CamtA0500203 responseBody = null;
+		try {
+			ApiResponse<CamtA0500203> response = api.getInvalidEventsPostWithHttpInfo(laUApplicationID, laUVersion,
+					laUCallTime, laURequestNonce, laUSigned, laUSignature, "wrong", requestBody, xRecord);
+			// Print response
+			responseBody = response.getData();
+			System.out.println(responseBody.getGetInvalidEventsResponse());
+			System.out.println(api.getApiClient().getJSON().serialize(responseBody));
+		} catch (ApiException e) {
+			// TODO: handle exception
+			// reading from Swagger.json
+			System.out.println(e.getMessage());
+			assertEquals(e.getMessage(), "Missing or invalid API key.");
+		}
+
+		ProcessingReport report = UtilHelper.getInstance()
+				.schemaValidation(api.getApiClient().getJSON().serialize(responseBody));
+		assertEquals(report.isSuccess(), true);
+
 	}
 
 }

@@ -79,10 +79,23 @@ public class UtilHelper {
 		}
 	}
 
+	public StringBuilder getErrorValue(String api,String code)
+			throws JsonProcessingException, IOException, URISyntaxException {
+		ObjectMapper mapper = new ObjectMapper();
+		URL url = this.getClass().getResource("/SWIFT-API_gpi-api_2.0.2_swagger.json");
+		final JsonNode root = mapper.readTree(new File(url.toURI()));
+		JsonNode update =  root.path("paths").path(api).path("post").path("responses").path(code);
+		String a = update.get("description").toString();
+		StringBuilder sb = new StringBuilder(a);
+		return sb.deleteCharAt(0).deleteCharAt(sb.length()-1);
+		
+	}
+
 	public static void main(String s[])
 			throws NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
 		// UtilHelper.getInstance().getResponseSchemaFromSpec("/status_confirmations");
-		UtilHelper.getInstance().getResponseSchemaFromSpec("/status_confirmations");
+		// UtilHelper.getInstance().getResponseSchemaFromSpec("/status_confirmations");
+		System.out.println(UtilHelper.getInstance().getErrorValue("/status_confirmations","404"));
 	}
 
 }

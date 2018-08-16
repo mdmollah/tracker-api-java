@@ -1,15 +1,17 @@
 
 package io.swagger.client.api;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
@@ -34,40 +36,51 @@ import io.swagger.client.model.UpdatePaymentStatusRequest;
 //@Ignore
 public class StatusConfirmationsApiTest {
 
-	private final StatusConfirmationsApi api = new StatusConfirmationsApi();
+	private final static StatusConfirmationsApi api = new StatusConfirmationsApi();
+	static String laUApplicationID;
+	static String laUVersion;
+	static String laUCallTime;
+	static String laURequestNonce;
+	static String laUResponseNonce;
+	static String laUSigned;
+	static String laUSignature;
+	static String xApi;
+	static String xRecord;
+	static boolean signnature_required;
+	static URI uri = null;
 
-	@Test
-	public void statusConfirmationsPostTest()
-			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
-		String laUApplicationID = UtilHelper.getInstance().mymap.get("laUApplicationID");
-		String laUVersion = UtilHelper.getInstance().mymap.get("laUVersion");
-		String laUCallTime = UtilHelper.getInstance().mymap.get("laUCallTime");
-		String laURequestNonce = UtilHelper.getInstance().mymap.get("laURequestNonce");
-		String laUResponseNonce = UtilHelper.getInstance().mymap.get("laUResponseNonce");
-		String laUSigned = UtilHelper.getInstance().mymap.get("laUSigned");
-		String laUSignature = UtilHelper.getInstance().mymap.get("laUSignature");
-		String xApi = UtilHelper.getInstance().mymap.get("xApi");
-		String xRecord = UtilHelper.getInstance().mymap.get("StatusConfirmationsApiTest.xRecord");
-		boolean signnature_required = Boolean
+	@BeforeClass
+	public static void setup() throws NoSuchAlgorithmException, IOException {
+		laUApplicationID = UtilHelper.getInstance().mymap.get("laUApplicationID");
+		laUVersion = UtilHelper.getInstance().mymap.get("laUVersion");
+		laUCallTime = UtilHelper.getInstance().mymap.get("laUCallTime");
+		laURequestNonce = UtilHelper.getInstance().mymap.get("laURequestNonce");
+		laUResponseNonce = UtilHelper.getInstance().mymap.get("laUResponseNonce");
+		laUSigned = UtilHelper.getInstance().mymap.get("laUSigned");
+		laUSignature = UtilHelper.getInstance().mymap.get("laUSignature");
+		xApi = UtilHelper.getInstance().mymap.get("xApi");
+		xRecord = UtilHelper.getInstance().mymap.get("StatusConfirmationsApiTest.xRecord");
+		signnature_required = Boolean
 				.parseBoolean(UtilHelper.getInstance().mymap.get("StatusConfirmationsApiTest.signatureRequired"));
-		URI uri = null;
-
-		// Provide URL of gpi Connector instance
-		// api.getApiClient().setBasePath("https://WIN-SSV7RS8364L:8443/swift.apitracker/v1");
-		api.getApiClient().setBasePath("https://virtserver.swaggerhub.com/Tracker-API/gpi-api/1.2.36");
+		uri = null;
+		api.getApiClient().setBasePath("https://sandbox.swiftlab-api-developer.com/swift-apitracker-pilot/v2");
 
 		try {
 			uri = new URI(api.getApiClient().getBasePath());
 		} catch (URISyntaxException ex) {
 			Logger.getLogger("Tracker API").log(Level.SEVERE, null, ex);
 		}
+	}
+
+	@Test
+	public void statusConfirmationsPostTest()
+			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
 
 		CamtA0100103 requestBody = new CamtA0100103();
 
 		requestBody.setUpdatePaymentStatusRequest(new UpdatePaymentStatusRequest());
 		requestBody.getUpdatePaymentStatusRequest().setFrom("CCLABEB0");
 		requestBody.getUpdatePaymentStatusRequest().setBusinessService("121");
-		// requestBody.getUpdatePaymentStatusRequest().setTransactionIdentification("97ed4827-7b6f-4491-a06f-b548d5a7512d");
 		requestBody.getUpdatePaymentStatusRequest().setInstructionIdentification("CCLABEB0ACSPG000");
 		requestBody.getUpdatePaymentStatusRequest().setPaymentStatus(new PaymentStatusType2Choice());
 		requestBody.getUpdatePaymentStatusRequest().getPaymentStatus().setDetailedStatus(new StatusDetails2());
@@ -95,28 +108,80 @@ public class StatusConfirmationsApiTest {
 		// api.getApiClient().setKeyManagers(managers);
 
 		// Call API
+		CamtA0100202 responseBody = null;
+		try {
+			ApiResponse<CamtA0100202> response = api.statusConfirmationsPostWithHttpInfo(laUApplicationID, laUVersion,
+					laUCallTime, laURequestNonce, laUSigned, laUSignature, signnature_required, xApi, requestBody,
+					xRecord);
+			// Print response
+			responseBody = response.getData();
 
-		ApiResponse<CamtA0100202> response = api.statusConfirmationsPostWithHttpInfo(laUApplicationID, laUVersion,
-				laUCallTime, laURequestNonce, laUSigned, laUSignature, signnature_required, xApi, requestBody, xRecord);
-		// Print response
-		CamtA0100202 responseBody = response.getData();
-		System.out.println(api.getApiClient().getJSON().serialize(responseBody));
+			System.out.println(api.getApiClient().getJSON().serialize(responseBody));
+		} catch (ApiException e) {
+			// TODO: handle exception
 
-		// Verify LAU
-		Map<String, List<String>> headers = response.getHeaders();
-		laUApplicationID = headers.get("LAUApplicationID").get(0);
-		laUCallTime = headers.get("LAUCallTime").get(0);
-		laURequestNonce = headers.get("LAURequestNonce").get(0);
-		laUResponseNonce = headers.get("LAUResponseNonce").get(0);
-		laUVersion = headers.get("LAUVersion").get(0);
-		laUSignature = headers.get("LAUSignature").get(0);
+			System.out.println(e.getCode());
+			System.out.println(e.getMessage());
+			System.out.println(e.getResponseBody());
+		}
 
 		ProcessingReport report = UtilHelper.getInstance()
 				.schemaValidation(api.getApiClient().getJSON().serialize(responseBody));
-		if (report.isSuccess())
-			System.out.println("Response Validation Success");
-		else
-			System.out.println("Response Validation Failed");
+
+		assertEquals(report.isSuccess(), true);
+
 	}
 
+	@Test
+	public void statusConfirmationsPost404ErrorTest()
+			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
+
+		CamtA0100103 requestBody = new CamtA0100103();
+		CamtA0100202 responseBody = null;
+		try {
+			ApiResponse<CamtA0100202> response = api.statusConfirmationsPostWithHttpInfo(laUApplicationID, laUVersion,
+					laUCallTime, laURequestNonce, laUSigned, laUSignature, signnature_required, xApi, requestBody, "1");
+			// Print response
+			responseBody = response.getData();
+			System.out.println(responseBody.getUpdatePaymentStatusResponse());
+			System.out.println(api.getApiClient().getJSON().serialize(responseBody));
+		} catch (ApiException e) {
+			// TODO: handle exception
+			// reading from Swagger.json
+			StringBuilder value = UtilHelper.getInstance().getErrorValue("/status_confirmations",
+					String.valueOf(e.getCode()));
+			// compare with response
+			assertEquals(value.toString(), e.getMessage());
+		}
+
+		ProcessingReport report = UtilHelper.getInstance()
+				.schemaValidation(api.getApiClient().getJSON().serialize(responseBody));
+		assertEquals(report.isSuccess(), true);
+
+	}
+	@Test
+	public void statusConfirmationsPost401ErrorTestWithInvalidXApi()
+			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
+
+		CamtA0100103 requestBody = new CamtA0100103();
+		CamtA0100202 responseBody = null;
+		try {
+			ApiResponse<CamtA0100202> response = api.statusConfirmationsPostWithHttpInfo(laUApplicationID, laUVersion,
+					laUCallTime, laURequestNonce, laUSigned, laUSignature, signnature_required, "wrong", requestBody, xRecord);
+			// Print response
+			responseBody = response.getData();
+			System.out.println(responseBody.getUpdatePaymentStatusResponse());
+			System.out.println(api.getApiClient().getJSON().serialize(responseBody));
+		} catch (ApiException e) {
+			// TODO: handle exception
+			// reading from Swagger.json
+			System.out.println(e.getMessage());
+			assertEquals(e.getMessage(),"Missing or invalid API key.");
+		}
+
+		ProcessingReport report = UtilHelper.getInstance()
+				.schemaValidation(api.getApiClient().getJSON().serialize(responseBody));
+		assertEquals(report.isSuccess(), true);
+
+	}
 }

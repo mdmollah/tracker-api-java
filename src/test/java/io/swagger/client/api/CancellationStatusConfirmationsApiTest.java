@@ -1,5 +1,7 @@
 package io.swagger.client.api;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -9,6 +11,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
@@ -17,6 +20,8 @@ import com.github.fge.jsonschema.core.report.ProcessingReport;
 import io.swagger.client.ApiException;
 import io.swagger.client.ApiResponse;
 import io.swagger.client.helper.UtilHelper;
+import io.swagger.client.model.CamtA0600102;
+import io.swagger.client.model.CamtA0600202;
 import io.swagger.client.model.CamtA0700102;
 import io.swagger.client.model.CamtA0700202;
 import io.swagger.client.model.CancellationResponseDetails1;
@@ -27,25 +32,34 @@ import io.swagger.client.model.PendingPaymentCancellationReason1Code;
 import io.swagger.client.model.TransactionCancellationStatusRequest;
 
 public class CancellationStatusConfirmationsApiTest {
-	private final CancellationStatusConfirmationsApi api = new CancellationStatusConfirmationsApi();
+	private final static CancellationStatusConfirmationsApi api = new CancellationStatusConfirmationsApi();
 
-	@Test
-	public void cancellationStatusConfirmationsPostTest() throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
-		String laUApplicationID = UtilHelper.getInstance().mymap.get("laUApplicationID");
-		String laUVersion = UtilHelper.getInstance().mymap.get("laUVersion");
-		String laUCallTime = UtilHelper.getInstance().mymap.get("laUCallTime");
-		String laURequestNonce = UtilHelper.getInstance().mymap.get("laURequestNonce");
-		String laUResponseNonce = UtilHelper.getInstance().mymap.get("laUResponseNonce");
-		String laUSigned = UtilHelper.getInstance().mymap.get("laUSigned");
-		String laUSignature = UtilHelper.getInstance().mymap.get("laUSignature");
-		String xApi = UtilHelper.getInstance().mymap.get("xApi");
-		String xRecord = UtilHelper.getInstance().mymap.get("CancellationStatusConfirmationsApiTest.xRecord");
-		boolean signnature_required = Boolean.parseBoolean(
-				UtilHelper.getInstance().mymap.get("CancellationStatusConfirmationsApiTest.signatureRequired"));
-		URI uri = null;
+	static String laUApplicationID;
+	static String laUVersion;
+	static String laUCallTime;
+	static String laURequestNonce;
+	static String laUResponseNonce;
+	static String laUSigned;
+	static String laUSignature;
+	static String xApi;
+	static String xRecord;
+	static boolean signnature_required;
+	static URI uri = null;
 
-		// Provide URL of gpi Connector instance
-		// api.getApiClient().setBasePath("https://WIN-SSV7RS8364L:8443/swift.apitracker/v1");
+	@BeforeClass
+	public static void setup() throws NoSuchAlgorithmException, IOException {
+		laUApplicationID = UtilHelper.getInstance().mymap.get("laUApplicationID");
+		laUVersion = UtilHelper.getInstance().mymap.get("laUVersion");
+		laUCallTime = UtilHelper.getInstance().mymap.get("laUCallTime");
+		laURequestNonce = UtilHelper.getInstance().mymap.get("laURequestNonce");
+		laUResponseNonce = UtilHelper.getInstance().mymap.get("laUResponseNonce");
+		laUSigned = UtilHelper.getInstance().mymap.get("laUSigned");
+		laUSignature = UtilHelper.getInstance().mymap.get("laUSignature");
+		xApi = UtilHelper.getInstance().mymap.get("xApi");
+		xRecord = UtilHelper.getInstance().mymap.get("CancelTransactionsApiTest.xRecord");
+		signnature_required = Boolean
+				.parseBoolean(UtilHelper.getInstance().mymap.get("CancellationStatusConfirmationsApiTest.signatureRequired"));
+		uri = null;
 		api.getApiClient().setBasePath("https://sandbox.swiftlab-api-developer.com/swift-apitracker-pilot/v2");
 
 		try {
@@ -53,6 +67,10 @@ public class CancellationStatusConfirmationsApiTest {
 		} catch (URISyntaxException ex) {
 			Logger.getLogger("Tracker API").log(Level.SEVERE, null, ex);
 		}
+	}
+	@Test
+	public void cancellationStatusConfirmationsPostTest() throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
+		
 
 		CamtA0700102 requestBody = new CamtA0700102();
 		requestBody.setTransactionCancellationStatusRequest(new TransactionCancellationStatusRequest());
@@ -87,7 +105,7 @@ public class CancellationStatusConfirmationsApiTest {
 		// Print response
 		CamtA0700202 responseBody = response.getData();
 		System.out.println(api.getApiClient().getJSON().serialize(responseBody));
-
+		System.out.println(response.getStatusCode());
 		// Verify LAU
 		Map<String, List<String>> headers = response.getHeaders();
 		laUApplicationID = headers.get("LAUApplicationID").get(0);
@@ -99,11 +117,67 @@ public class CancellationStatusConfirmationsApiTest {
 
 		
 		ProcessingReport report = UtilHelper.getInstance().schemaValidation(api.getApiClient().getJSON().serialize(responseBody));
-		System.out.println(report);
-		if(report.isSuccess())
-			System.out.println("Response Validation Success");
-		else
-			System.out.println("Response Validation Failed");
+		//System.out.println(report);
+		assertEquals(report.isSuccess(), true);
+
 	}
+	@Test
+	public void cancelTransactionsApiPost404ErrorTest()
+			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
+
+		CamtA0700102 requestBody = new CamtA0700102();
+		CamtA0700202 responseBody = null;
+		try {
+			ApiResponse<CamtA0700202> response = api.cancellationStatusConfirmationsPostWithHttpInfo(laUApplicationID,
+					laUVersion, laUCallTime, laURequestNonce, laUSigned, laUSignature, signnature_required, xApi,
+					requestBody, xRecord);
+			// Print response
+			responseBody = response.getData();
+			System.out.println(responseBody.getTransactionCancellationStatusResponse());
+			System.out.println(api.getApiClient().getJSON().serialize(responseBody));
+		} catch (ApiException e) {
+			// TODO: handle exception
+			// reading from Swagger.json
+			System.out.println("Response Code =" + e.getCode() + " Response Message=" + e.getMessage());
+			StringBuilder value = UtilHelper.getInstance().getErrorValue("/cancellation_status_confirmations",
+					String.valueOf(e.getCode()));
+			// compare with response
+			System.out.println(value);
+			assertEquals(value.toString(), e.getMessage());
+		}
+
+		ProcessingReport report = UtilHelper.getInstance()
+				.schemaValidation(api.getApiClient().getJSON().serialize(responseBody));
+		assertEquals(report.isSuccess(), true);
+
+	}
+
+	@Test
+	public void cancelTransactionsApiPost401ErrorTestWithInvalidXApi()
+			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
+
+		CamtA0700102 requestBody = new CamtA0700102();
+		CamtA0700202 responseBody = null;	
+		try {
+			ApiResponse<CamtA0700202> response = api.cancellationStatusConfirmationsPostWithHttpInfo(laUApplicationID, laUVersion,
+					laUCallTime, laURequestNonce, laUSigned, laUSignature, signnature_required, xApi, requestBody,
+					xRecord);
+			// Print response
+			responseBody = response.getData();
+			System.out.println(responseBody.getTransactionCancellationStatusResponse());
+			System.out.println(api.getApiClient().getJSON().serialize(responseBody));
+		} catch (ApiException e) {
+			// TODO: handle exception
+			// reading from Swagger.json
+			System.out.println(e.getMessage());
+			assertEquals(e.getMessage(), "Missing or invalid API key.");
+		}
+
+		ProcessingReport report = UtilHelper.getInstance()
+				.schemaValidation(api.getApiClient().getJSON().serialize(responseBody));
+		assertEquals(report.isSuccess(), true);
+
+	}
+
 
 }
