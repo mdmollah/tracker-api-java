@@ -13,12 +13,8 @@ import java.util.logging.Logger;
 
 import org.junit.Test;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
-import com.github.fge.jsonschema.examples.Utils;
-import com.github.fge.jsonschema.main.JsonSchema;
-import com.github.fge.jsonschema.main.JsonSchemaFactory;
 
 import io.swagger.client.ApiException;
 import io.swagger.client.ApiResponse;
@@ -30,6 +26,7 @@ import io.swagger.client.model.GetChangedPaymentTransactionsRequest;
 public class GetChangedPaymentTransactionsApiTest {
 
 	private final GetChangedPaymentTransactionsApi api = new GetChangedPaymentTransactionsApi();
+
 
 	@Test
 	public void getChangedPaymentTransactionsPostTest() throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {

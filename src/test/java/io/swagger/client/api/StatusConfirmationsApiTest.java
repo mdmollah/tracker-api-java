@@ -1,3 +1,4 @@
+
 package io.swagger.client.api;
 
 import java.io.IOException;
@@ -36,7 +37,8 @@ public class StatusConfirmationsApiTest {
 	private final StatusConfirmationsApi api = new StatusConfirmationsApi();
 
 	@Test
-	public void statusConfirmationsPostTest() throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
+	public void statusConfirmationsPostTest()
+			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
 		String laUApplicationID = UtilHelper.getInstance().mymap.get("laUApplicationID");
 		String laUVersion = UtilHelper.getInstance().mymap.get("laUVersion");
 		String laUCallTime = UtilHelper.getInstance().mymap.get("laUCallTime");
@@ -99,7 +101,7 @@ public class StatusConfirmationsApiTest {
 		// Print response
 		CamtA0100202 responseBody = response.getData();
 		System.out.println(api.getApiClient().getJSON().serialize(responseBody));
-		
+
 		// Verify LAU
 		Map<String, List<String>> headers = response.getHeaders();
 		laUApplicationID = headers.get("LAUApplicationID").get(0);
@@ -109,8 +111,9 @@ public class StatusConfirmationsApiTest {
 		laUVersion = headers.get("LAUVersion").get(0);
 		laUSignature = headers.get("LAUSignature").get(0);
 
-		ProcessingReport report = UtilHelper.getInstance().schemaValidation(api.getApiClient().getJSON().serialize(responseBody));
-		if(report.isSuccess())
+		ProcessingReport report = UtilHelper.getInstance()
+				.schemaValidation(api.getApiClient().getJSON().serialize(responseBody));
+		if (report.isSuccess())
 			System.out.println("Response Validation Success");
 		else
 			System.out.println("Response Validation Failed");

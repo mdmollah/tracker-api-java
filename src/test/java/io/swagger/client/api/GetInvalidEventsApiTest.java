@@ -32,7 +32,8 @@ public class GetInvalidEventsApiTest {
 	private final GetInvalidEventsApi api = new GetInvalidEventsApi();
 
 	@Test
-	public void getInvalidEventsPostTest() throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
+	public void getInvalidEventsPostTest()
+			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
 
 		String laUApplicationID = UtilHelper.getInstance().mymap.get("laUApplicationID");
 		String laUVersion = UtilHelper.getInstance().mymap.get("laUVersion");
@@ -89,8 +90,9 @@ public class GetInvalidEventsApiTest {
 		laUVersion = headers.get("LAUVersion").get(0);
 		laUSignature = headers.get("LAUSignature").get(0);
 
-		ProcessingReport report = UtilHelper.getInstance().schemaValidation(api.getApiClient().getJSON().serialize(responseBody));
-		if(report.isSuccess())
+		ProcessingReport report = UtilHelper.getInstance()
+				.schemaValidation(api.getApiClient().getJSON().serialize(responseBody));
+		if (report.isSuccess())
 			System.out.println("Response Validation Success");
 		else
 			System.out.println("Response Validation Failed");
