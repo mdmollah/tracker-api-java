@@ -13,7 +13,9 @@ import java.util.logging.Logger;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 
@@ -30,7 +32,10 @@ import io.swagger.client.model.InvestigationExecutionStatusReason1;
 import io.swagger.client.model.PaymentCancellationRejection3Code;
 import io.swagger.client.model.PendingPaymentCancellationReason1Code;
 import io.swagger.client.model.TransactionCancellationStatusRequest;
+import junitparams.FileParameters;
+import junitparams.JUnitParamsRunner;
 
+@RunWith(JUnitParamsRunner.class)
 public class CancellationStatusConfirmationsApiTest {
 	private final static CancellationStatusConfirmationsApi api = new CancellationStatusConfirmationsApi();
 
@@ -57,8 +62,8 @@ public class CancellationStatusConfirmationsApiTest {
 		laUSignature = UtilHelper.getInstance().mymap.get("laUSignature");
 		xApi = UtilHelper.getInstance().mymap.get("xApi");
 		xRecord = UtilHelper.getInstance().mymap.get("CancelTransactionsApiTest.xRecord");
-		signnature_required = Boolean
-				.parseBoolean(UtilHelper.getInstance().mymap.get("CancellationStatusConfirmationsApiTest.signatureRequired"));
+		signnature_required = Boolean.parseBoolean(
+				UtilHelper.getInstance().mymap.get("CancellationStatusConfirmationsApiTest.signatureRequired"));
 		uri = null;
 		api.getApiClient().setBasePath("https://sandbox.swiftlab-api-developer.com/swift-apitracker-pilot/v2");
 
@@ -68,10 +73,11 @@ public class CancellationStatusConfirmationsApiTest {
 			Logger.getLogger("Tracker API").log(Level.SEVERE, null, ex);
 		}
 	}
-	@Test
-	public void cancellationStatusConfirmationsPostTest() throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
-		
 
+	@Test
+	public void cancellationStatusConfirmationsPostTest() throws ApiException, NoSuchAlgorithmException, IOException,
+			ProcessingException, URISyntaxException, InterruptedException {
+		Thread.sleep(2000);
 		CamtA0700102 requestBody = new CamtA0700102();
 		requestBody.setTransactionCancellationStatusRequest(new TransactionCancellationStatusRequest());
 		requestBody.getTransactionCancellationStatusRequest().setFrom("CCLABEB0");
@@ -115,16 +121,17 @@ public class CancellationStatusConfirmationsApiTest {
 		laUVersion = headers.get("LAUVersion").get(0);
 		laUSignature = headers.get("LAUSignature").get(0);
 
-		
-		ProcessingReport report = UtilHelper.getInstance().schemaValidation(api.getApiClient().getJSON().serialize(responseBody));
-		//System.out.println(report);
+		ProcessingReport report = UtilHelper.getInstance()
+				.schemaValidation(api.getApiClient().getJSON().serialize(responseBody));
+		// System.out.println(report);
 		assertEquals(report.isSuccess(), true);
 
 	}
-	@Test
-	public void cancelTransactionsApiPost404ErrorTest()
-			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
 
+	@Test
+	public void cancelTransactionsApiPost404ErrorTest() throws ApiException, NoSuchAlgorithmException, IOException,
+			ProcessingException, URISyntaxException, InterruptedException {
+		Thread.sleep(2000);
 		CamtA0700102 requestBody = new CamtA0700102();
 		CamtA0700202 responseBody = null;
 		try {
@@ -133,8 +140,8 @@ public class CancellationStatusConfirmationsApiTest {
 					requestBody, xRecord);
 			// Print response
 			responseBody = response.getData();
-			System.out.println(responseBody.getTransactionCancellationStatusResponse());
-			System.out.println(api.getApiClient().getJSON().serialize(responseBody));
+			// System.out.println(responseBody.getTransactionCancellationStatusResponse());
+			// System.out.println(api.getApiClient().getJSON().serialize(responseBody));
 		} catch (ApiException e) {
 			// TODO: handle exception
 			// reading from Swagger.json
@@ -153,19 +160,19 @@ public class CancellationStatusConfirmationsApiTest {
 	}
 
 	@Test
-	public void cancelTransactionsApiPost401ErrorTestWithInvalidXApi()
-			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
-
+	public void cancelTransactionsApiPost401ErrorTestWithInvalidXApi() throws ApiException, NoSuchAlgorithmException,
+			IOException, ProcessingException, URISyntaxException, InterruptedException {
+		Thread.sleep(2000);
 		CamtA0700102 requestBody = new CamtA0700102();
-		CamtA0700202 responseBody = null;	
+		CamtA0700202 responseBody = null;
 		try {
-			ApiResponse<CamtA0700202> response = api.cancellationStatusConfirmationsPostWithHttpInfo(laUApplicationID, laUVersion,
-					laUCallTime, laURequestNonce, laUSigned, laUSignature, signnature_required, xApi, requestBody,
-					xRecord);
+			ApiResponse<CamtA0700202> response = api.cancellationStatusConfirmationsPostWithHttpInfo(laUApplicationID,
+					laUVersion, laUCallTime, laURequestNonce, laUSigned, laUSignature, signnature_required, xApi,
+					requestBody, xRecord);
 			// Print response
 			responseBody = response.getData();
-			System.out.println(responseBody.getTransactionCancellationStatusResponse());
-			System.out.println(api.getApiClient().getJSON().serialize(responseBody));
+			// System.out.println(responseBody.getTransactionCancellationStatusResponse());
+			// System.out.println(api.getApiClient().getJSON().serialize(responseBody));
 		} catch (ApiException e) {
 			// TODO: handle exception
 			// reading from Swagger.json
@@ -179,5 +186,54 @@ public class CancellationStatusConfirmationsApiTest {
 
 	}
 
+	@Test
+	@FileParameters("src/test/resources/cancel_status.csv")
+	public void requestApiWithDifferentRequestBody(String from, String business_service, String uetr,
+			String assignment_identification, String resolved_case_identification,
+			String investigation_execution_status, String rejected, String pending, String originator,
+			String forwarded_to_agent, String error) throws JsonProcessingException, NoSuchAlgorithmException,
+			IOException, URISyntaxException, InterruptedException {
+		Thread.sleep(2000);
+		CamtA0700102 requestBody = new CamtA0700102();
+		requestBody.setTransactionCancellationStatusRequest(new TransactionCancellationStatusRequest());
+		requestBody.getTransactionCancellationStatusRequest().setFrom(from);
+		requestBody.getTransactionCancellationStatusRequest().setBusinessService(business_service);
+		requestBody.getTransactionCancellationStatusRequest().setUetr(uetr);
+		requestBody.getTransactionCancellationStatusRequest().assignmentIdentification(assignment_identification);
+		requestBody.getTransactionCancellationStatusRequest().resolvedCaseIdentification(resolved_case_identification);
+		requestBody.getTransactionCancellationStatusRequest()
+				.setUnderlyingCancellationDetails(new CancellationResponseDetails1());
+		requestBody.getTransactionCancellationStatusRequest().getUnderlyingCancellationDetails()
+				.setInvestigationExecutionStatus(
+						InvestigationExecutionConfirmation5Code.valueOf(investigation_execution_status));
+		requestBody.getTransactionCancellationStatusRequest().getUnderlyingCancellationDetails()
+				.setInvestigationExecutionStatusReason(new InvestigationExecutionStatusReason1());
+		requestBody.getTransactionCancellationStatusRequest().getUnderlyingCancellationDetails()
+				.getInvestigationExecutionStatusReason()
+				.setRejected(PaymentCancellationRejection3Code.valueOf(rejected));
+		requestBody.getTransactionCancellationStatusRequest().getUnderlyingCancellationDetails()
+				.getInvestigationExecutionStatusReason()
+				.setPending(PendingPaymentCancellationReason1Code.valueOf(pending));
+		requestBody.getTransactionCancellationStatusRequest().setOriginator(originator);
+		requestBody.getTransactionCancellationStatusRequest().setForwardedToAgent(forwarded_to_agent);
+
+		CamtA0700202 responseBody = null;
+		try {
+			ApiResponse<CamtA0700202> response = api.cancellationStatusConfirmationsPostWithHttpInfo(laUApplicationID,
+					laUVersion, laUCallTime, laURequestNonce, laUSigned, laUSignature, signnature_required, xApi,
+					requestBody, xRecord);
+			// Print response
+			responseBody = response.getData();
+			// System.out.println(responseBody.getTransactionCancellationStatusResponse());
+			// System.out.println(api.getApiClient().getJSON().serialize(responseBody));
+		} catch (ApiException e) {
+			// TODO: handle exception
+			// reading from Swagger.json
+			System.out.println("Response Code =" + e.getCode() + " Response Message=" + e.getMessage());
+			// compare with response
+			assertEquals(e.getMessage(), error);
+		}
+
+	}
 
 }

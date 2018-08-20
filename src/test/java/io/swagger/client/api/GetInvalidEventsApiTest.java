@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
@@ -23,11 +24,14 @@ import io.swagger.client.helper.UtilHelper;
 import io.swagger.client.model.CamtA0500103;
 import io.swagger.client.model.CamtA0500203;
 import io.swagger.client.model.GetInvalidEventsRequest;
+import junitparams.FileParameters;
+import junitparams.JUnitParamsRunner;
 
 /**
  * API tests for GetInvalidEventsApi
  */
-//@Ignore
+
+@RunWith(JUnitParamsRunner.class)
 public class GetInvalidEventsApiTest {
 
 	private final static GetInvalidEventsApi api = new GetInvalidEventsApi();
@@ -69,8 +73,8 @@ public class GetInvalidEventsApiTest {
 
 	@Test
 	public void getInvalidEventsPostTest()
-			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
-
+			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException, InterruptedException {
+		Thread.sleep(2000);
 		CamtA0500103 requestBody = new CamtA0500103();
 		requestBody.setGetInvalidEventsRequest(new GetInvalidEventsRequest());
 		List<String> myInstitution = asList("CCLABEB0");
@@ -103,8 +107,8 @@ public class GetInvalidEventsApiTest {
 
 	@Test
 	public void getInvalidEventsPost404ErrorTest()
-			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
-
+			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException, InterruptedException {
+		Thread.sleep(2000);
 		CamtA0500103 requestBody = new CamtA0500103();
 		CamtA0500203 responseBody = null;
 		try {
@@ -133,8 +137,8 @@ public class GetInvalidEventsApiTest {
 
 	@Test
 	public void getInvalidEventsPost401ErrorTestWithInvalidXApi()
-			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
-
+			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException, InterruptedException {
+		Thread.sleep(2000);
 		CamtA0500103 requestBody = new CamtA0500103();
 		CamtA0500203 responseBody = null;
 		try {
@@ -154,6 +158,35 @@ public class GetInvalidEventsApiTest {
 		ProcessingReport report = UtilHelper.getInstance()
 				.schemaValidation(api.getApiClient().getJSON().serialize(responseBody));
 		assertEquals(report.isSuccess(), true);
+
+	}
+
+	@Test
+	@FileParameters("src/test/resources/Get_Invalid_Events.csv")
+	public void requestApiWithDifferentRequestBody(String institute,String fromDtae,String toDate,String maximumNumber,String more,String Error) throws InterruptedException {
+		Thread.sleep(2000);
+		CamtA0500103 requestBody = new CamtA0500103();
+		requestBody.setGetInvalidEventsRequest(new GetInvalidEventsRequest());
+		List<String> myInstitution = asList(institute);
+		requestBody.getGetInvalidEventsRequest().setMyInstitution(myInstitution);
+		requestBody.getGetInvalidEventsRequest().setFromDateTime(fromDtae);
+		requestBody.getGetInvalidEventsRequest().setToDateTime(toDate);
+		requestBody.getGetInvalidEventsRequest().setMaximumNumber(maximumNumber);
+		requestBody.getGetInvalidEventsRequest().setMore(more);
+		CamtA0500203 responseBody = null;
+		try {
+			ApiResponse<CamtA0500203> response = api.getInvalidEventsPostWithHttpInfo(laUApplicationID, laUVersion,
+					laUCallTime, laURequestNonce, laUSigned, laUSignature, xApi, requestBody, xRecord);
+			// Print response
+			responseBody = response.getData();
+			//System.out.println(responseBody.getGetInvalidEventsResponse());
+			System.out.println(api.getApiClient().getJSON().serialize(responseBody));
+		} catch (ApiException e) {
+			// TODO: handle exception
+			// reading from Swagger.json
+			System.out.println(e.getMessage());
+			assertEquals(e.getMessage(), Error);
+		}
 
 	}
 

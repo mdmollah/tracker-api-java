@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
@@ -26,7 +27,10 @@ import io.swagger.client.model.CamtA0400203;
 import io.swagger.client.model.CamtA0500103;
 import io.swagger.client.model.CamtA0500203;
 import io.swagger.client.model.GetChangedPaymentTransactionsRequest;
+import junitparams.FileParameters;
+import junitparams.JUnitParamsRunner;
 
+@RunWith(JUnitParamsRunner.class)
 public class GetChangedPaymentTransactionsApiTest {
 
 	private final static GetChangedPaymentTransactionsApi api = new GetChangedPaymentTransactionsApi();
@@ -67,8 +71,8 @@ public class GetChangedPaymentTransactionsApiTest {
 	}
 
 	@Test
-	public void getChangedPaymentTransactionsPostTest() throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
-
+	public void getChangedPaymentTransactionsPostTest() throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException, InterruptedException {
+		Thread.sleep(2000);
 		CamtA0400103 requestBody = new CamtA0400103();
 		requestBody.setGetChangedPaymentTransactionsRequest(new GetChangedPaymentTransactionsRequest());
 		List<String> myInstitution = asList("CCLABEB0");
@@ -98,8 +102,8 @@ public class GetChangedPaymentTransactionsApiTest {
 	}
 	@Test
 	public void getChangedPaymentTransactionsPost404ErrorTest()
-			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
-
+			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException, InterruptedException {
+		Thread.sleep(2000);
 		CamtA0400103 requestBody = new CamtA0400103();
 		CamtA0400203 responseBody = null;
 		try {
@@ -128,8 +132,8 @@ public class GetChangedPaymentTransactionsApiTest {
 
 	@Test
 	public void getChangedPaymentTransactionsPost401ErrorTestWithInvalidXApi()
-			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
-
+			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException, InterruptedException {
+		Thread.sleep(2000);
 		CamtA0400103 requestBody = new CamtA0400103();
 		CamtA0400203 responseBody = null;
 		try {
@@ -152,5 +156,31 @@ public class GetChangedPaymentTransactionsApiTest {
 
 	}
 
+	@Test
+	@FileParameters("src/test/resources/Get_Changed_Payment_transactions.csv")
+	public void requestApiWithDifferentRequestBody(String institute,String time,String more,String Error) throws InterruptedException {
+		Thread.sleep(2000);
+		
+		CamtA0400103 requestBody = new CamtA0400103();
+		requestBody.setGetChangedPaymentTransactionsRequest(new GetChangedPaymentTransactionsRequest());
+		List<String> myInstitution = asList(institute);
+		requestBody.getGetChangedPaymentTransactionsRequest().setMyInstitution(myInstitution);
+		requestBody.getGetChangedPaymentTransactionsRequest().setStartTime(time);
+		requestBody.getGetChangedPaymentTransactionsRequest().setMore(more);
+		CamtA0400203 responseBody = null;
+		try {
+			ApiResponse<CamtA0400203> response = api.getChangedPaymentTransactionsPostWithHttpInfo(laUApplicationID, laUVersion,
+					laUCallTime, laURequestNonce, laUSigned, laUSignature, xApi, requestBody, xRecord);
+			// Print response
+			responseBody = response.getData();
+			System.out.println(responseBody.getGetChangedPaymentTransactionsResponse());
+			System.out.println(api.getApiClient().getJSON().serialize(responseBody));
+		} catch (ApiException e) {
+			// TODO: handle exception
+			// reading from Swagger.json
+			System.out.println(e.getMessage());
+			assertEquals(e.getMessage(), Error);
+		}
 
+	}
 }

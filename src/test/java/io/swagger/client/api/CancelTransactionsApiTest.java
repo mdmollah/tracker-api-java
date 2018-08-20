@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
@@ -28,7 +29,10 @@ import io.swagger.client.model.CancelTransactionRequest;
 import io.swagger.client.model.CancellationReason6Code;
 import io.swagger.client.model.CancellationRequestDetails1;
 import io.swagger.client.model.PendingPaymentCancellationReason2Code;
+import junitparams.FileParameters;
+import junitparams.JUnitParamsRunner;
 
+@RunWith(JUnitParamsRunner.class)
 public class CancelTransactionsApiTest {
 	private final static CancelTransactionsApi api = new CancelTransactionsApi();
 
@@ -68,8 +72,9 @@ public class CancelTransactionsApiTest {
 	}
 
 	@Test
-	public void cancelTransactionsApiPostTest()
-			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
+	public void cancelTransactionsApiPostTest() throws ApiException, NoSuchAlgorithmException, IOException,
+			ProcessingException, URISyntaxException, InterruptedException {
+		Thread.sleep(2000);
 		CamtA0600102 requestBody = new CamtA0600102();
 		requestBody.setCancelTransactionRequest(new CancelTransactionRequest());
 		requestBody.getCancelTransactionRequest().setFrom("");
@@ -104,9 +109,9 @@ public class CancelTransactionsApiTest {
 	}
 
 	@Test
-	public void cancelTransactionsApiPost404ErrorTest()
-			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
-
+	public void cancelTransactionsApiPost404ErrorTest() throws ApiException, NoSuchAlgorithmException, IOException,
+			ProcessingException, URISyntaxException, InterruptedException {
+		Thread.sleep(2000);
 		CamtA0600102 requestBody = new CamtA0600102();
 		CamtA0600202 responseBody = null;
 		try {
@@ -135,9 +140,9 @@ public class CancelTransactionsApiTest {
 	}
 
 	@Test
-	public void cancelTransactionsApiPost401ErrorTestWithInvalidXApi()
-			throws ApiException, NoSuchAlgorithmException, IOException, ProcessingException, URISyntaxException {
-
+	public void cancelTransactionsApiPost401ErrorTestWithInvalidXApi() throws ApiException, NoSuchAlgorithmException,
+			IOException, ProcessingException, URISyntaxException, InterruptedException {
+		Thread.sleep(2000);
 		CamtA0600102 requestBody = new CamtA0600102();
 		CamtA0600202 responseBody = null;
 		try {
@@ -159,6 +164,43 @@ public class CancelTransactionsApiTest {
 				.schemaValidation(api.getApiClient().getJSON().serialize(responseBody));
 		assertEquals(report.isSuccess(), true);
 
+	}
+
+	@Test
+	@FileParameters("src/test/resources/cancel_transactions.csv")
+	public void requestApiWithDifferentRequestBody(String from, String business_service, String case_identification,
+			String uetr, String original_instruction_identification, String cancellation_reason_information,
+			String indemnity_agreement, String Error) throws InterruptedException {
+		Thread.sleep(2000);
+		CamtA0600102 requestBody = new CamtA0600102();
+		requestBody.setCancelTransactionRequest(new CancelTransactionRequest());
+		requestBody.getCancelTransactionRequest().setFrom(from);
+		requestBody.getCancelTransactionRequest().setBusinessService(business_service);
+		requestBody.getCancelTransactionRequest().setCaseIdentification(case_identification);
+		requestBody.getCancelTransactionRequest().setUetr(uetr);
+		requestBody.getCancelTransactionRequest()
+				.setOriginalInstructionIdentification(original_instruction_identification);
+		requestBody.getCancelTransactionRequest().setUnderlyingCancellationDetails(new CancellationRequestDetails1());
+		requestBody.getCancelTransactionRequest().getUnderlyingCancellationDetails()
+				.setCancellationReasonInformation(CancellationReason6Code.valueOf(cancellation_reason_information));
+		requestBody.getCancelTransactionRequest().getUnderlyingCancellationDetails()
+				.setIndemnityAgreement(PendingPaymentCancellationReason2Code.valueOf(indemnity_agreement));
+
+		CamtA0600202 responseBody = null;
+		try {
+			ApiResponse<CamtA0600202> response = api.cancelTransactionsPostWithHttpInfo(laUApplicationID, laUVersion,
+					laUCallTime, laURequestNonce, laUSigned, laUSignature, signnature_required, xApi, requestBody,
+					xRecord);
+			// Print response
+			responseBody = response.getData();
+			// System.out.println(responseBody.getCancelTransactionResponse());
+			System.out.println(api.getApiClient().getJSON().serialize(responseBody));
+		} catch (ApiException e) {
+			// TODO: handle exception
+			// reading from Swagger.json
+			System.out.println(e.getMessage());
+			assertEquals(e.getMessage(), Error);
+		}
 	}
 
 }

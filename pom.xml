@@ -158,6 +158,14 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/pl.pragmatists/JUnitParams -->
+		<dependency>
+			<groupId>pl.pragmatists</groupId>
+			<artifactId>JUnitParams</artifactId>
+			<version>1.0.4</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 
 
